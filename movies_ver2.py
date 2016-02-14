@@ -133,7 +133,7 @@ def database_create():
 def genre_dict_empty(comb_genre,n):
 
     if n is 0:
-        request_genre = cur.execute('''SELECT Genre.genre FROM Genre''')
+        request_genre = cur.execute('''SELECT Genre.id FROM Genre''')
         request_genre = cur.fetchall()
 
     for item in request_genre:
@@ -144,7 +144,7 @@ def create_matrix():
 
     # index genre_id -> row_id
     genre_to_row=dict()
-    cur.execute('''SELECT Genre.genre FROM Genre''')
+    cur.execute('''SELECT Genre.id FROM Genre''')
 
     for row_id, genre in enumerate(cur):
         genre_to_row[genre[0]]=row_id
@@ -164,7 +164,7 @@ def create_matrix():
 
     matrix_film_genre = lil_matrix((len(genre_to_row), len(film_to_col)))
 
-    cur.execute('''SELECT Movie.id, Genre.genre
+    cur.execute('''SELECT Movie.id, Genre.id
         FROM Movie JOIN Connection JOIN Genre
         ON Connection.movie_id = Movie.id AND Connection.genre_id = Genre.id''')
 
@@ -192,7 +192,7 @@ def print_result(request):
 
     for item in request:
 
-        genre_out[item[0]]=genre_out.get(item[0], '')+item[4]+' '
+        genre_out[item[0]]=genre_out.get(item[0], '')+item[5]+' '
         genre_dict[item[4]]=genre_dict.get(item[4],0)+1
 
         if int(item[0]) == id_local:
@@ -215,7 +215,7 @@ try:
     status=open('status.done')
     status=status.read()
 
-    cur.execute('''SELECT Genre.genre FROM Genre''')
+    cur.execute('''SELECT Genre.id FROM Genre''')
     cur.fetchall()
 
     print ('Database connected!')
@@ -241,7 +241,7 @@ genre_dict=genre_dict_empty(genre_dict, 0)
 
 #request = cur.execute("SELECT * FROM Movies_all_data WHERE Name LIKE ? ORDER BY Rating DESC", ('%' + quest + '%',))
 
-request = cur.execute('''SELECT Movie.id, Movie.name, Movie.year, Movie.rating, Genre.genre
+request = cur.execute('''SELECT Movie.id, Movie.name, Movie.year, Movie.rating, Genre.id, Genre.genre
     FROM Movie JOIN Connection JOIN Genre
     ON Connection.movie_id = Movie.id AND Connection.genre_id = Genre.id
     WHERE Movie.name LIKE ? ORDER BY Movie.rating DESC''', ('%' + quest + '%',))
@@ -299,7 +299,7 @@ for i in sort_ind:
 
 for rec in rec_result:
 
-    cur.execute('''SELECT Movie.id, Movie.name, Movie.year, Movie.rating, Genre.genre
+    cur.execute('''SELECT Movie.id, Movie.name, Movie.year, Movie.rating, Genre.id, Genre.genre
         FROM Movie JOIN Connection JOIN Genre
         ON Connection.movie_id = Movie.id AND Connection.genre_id = Genre.id
         WHERE Movie.id LIKE ?''', (rec,))
