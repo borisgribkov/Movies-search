@@ -66,19 +66,16 @@ def database_create():
     DROP TABLE IF EXISTS Movie;
     DROP TABLE IF EXISTS Genre;
     DROP TABLE IF EXISTS Connection;
-
     CREATE TABLE Movie (
         id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
         name   TEXT,
         year   TEXT,
         rating FLOAT
     );
-
     CREATE TABLE Genre (
         id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
         genre  TEXT UNIQUE
     );
-
     CREATE TABLE Connection (
         movie_id   INTEGER,
         genre_id   INTEGER,
@@ -187,6 +184,7 @@ def create_vector(genre_dict, genre_to_row):
 
 def print_result(request):
 
+    global genre_dict
     id_local=None
     genre_out=dict()
 
