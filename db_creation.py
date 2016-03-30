@@ -60,25 +60,12 @@ def database_create(cur):
         except: rating = 0
 
         db_request_insert_data(cur, name, year, rating)
-        #cur.execute('INSERT INTO Movie (name, year, rating) VALUES (?, ?, ?)',
-        #(name, year, rating))
-
         movie_id = db_request_select_movie_id(cur, name)
-        #cur.execute('SELECT id FROM Movie WHERE name = ? ', (name, ))
-        #movie_id = cur.fetchone()[0]
-
 
         for genre in genres_list:
 
             db_request_insert_genre(cur, genre)
-            #cur.execute('INSERT OR IGNORE INTO Genre (genre) VALUES (?)',(genre,))
-
             genre_id = db_request_select_genre_id(cur, genre)
-            #cur.execute('SELECT id FROM Genre WHERE genre = ? ', (genre, ))
-            #genre_id = cur.fetchone()[0]
-
             db_request_create_connection(cur, movie_id, genre_id)
-            #cur.execute('INSERT OR REPLACE INTO Connection (movie_id, genre_id) VALUES (?,?)',
-            #(movie_id, genre_id))
-
+            
     datamovies.close()
