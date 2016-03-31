@@ -1,10 +1,5 @@
-from db_request import db_request_no_params
-from db_request import db_request_insert_data
-from db_request import db_request_select_movie_id
-from db_request import db_request_insert_genre
-from db_request import db_request_select_genre_id
-from db_request import db_request_create_connection
-
+from db_request import (db_request_no_params, db_request_insert_data, db_request_select_movie_id,
+                        db_request_insert_genre, db_request_select_genre_id, db_request_create_connection)
 
 def average(rating, count):
 
@@ -13,6 +8,7 @@ def average(rating, count):
         rating[film_id]= "%.3f" % rating[film_id]
 
     return rating
+
 
 def rating_count():
 
@@ -36,15 +32,16 @@ def rating_count():
 
     return rating
 
+
 def database_create(cur):
 
-    datamovies = open('movies.dat')
+    data_movies = open('movies.dat')
 
     db_request_no_params(cur, 'create_table')
 
     movies_rating = rating_count()
 
-    for movie in datamovies:
+    for movie in data_movies:
 
         movie_search=movie.rstrip().split('::')
 
@@ -67,5 +64,5 @@ def database_create(cur):
             db_request_insert_genre(cur, genre)
             genre_id = db_request_select_genre_id(cur, genre)
             db_request_create_connection(cur, movie_id, genre_id)
-            
-    datamovies.close()
+
+    data_movies.close()

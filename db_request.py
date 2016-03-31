@@ -22,6 +22,11 @@ def db_request_no_params(cur, request):
     );
     ''')
 
+    if request == 'get genre':
+        cur.execute('''SELECT Genre.id FROM Genre''')
+        request_genre = cur.fetchall()
+        return request_genre
+
 
 def db_request_insert_data(cur, name, year, rating):
     cur.execute('INSERT INTO Movie (name, year, rating) VALUES (?, ?, ?)', (name, year, rating))
@@ -45,3 +50,12 @@ def db_request_select_genre_id(cur, genre):
 
 def db_request_create_connection(cur, movie_id, genre_id):
     cur.execute('INSERT OR REPLACE INTO Connection (movie_id, genre_id) VALUES (?,?)', (movie_id, genre_id))
+
+
+def db_request_find_film(cur, quest):
+    cur.execute('''SELECT Movie.id, Movie.name, Movie.year, Movie.rating, Genre.id, Genre.genre
+        FROM Movie JOIN Connection JOIN Genre
+        ON Connection.movie_id = Movie.id AND Connection.genre_id = Genre.id
+        WHERE Movie.name LIKE ? ORDER BY Movie.rating DESC''', ('%' + quest + '%',))
+    request = cur.fetchall()
+    return request
