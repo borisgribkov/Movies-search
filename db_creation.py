@@ -13,17 +13,17 @@ def open_file(file_name):
 
     except:
 
-        print 'Please copy ratings.dat into the project folder or download it from MovieLens'
+        print 'Please copy ', file_name,' into the project folder or download it from MovieLens'
         download_start = raw_input('Start download? Press Y to start')
 
         if download_start == 'y':
 
-            urllib.urlretrieve('http://files.grouplens.org/datasets/movielens/ml-10m.zip')
+            urllib.urlretrieve('http://files.grouplens.org/datasets/movielens/ml-10m.zip', 'ml-10m.zip')
 
-            zip_file = zipfile.ZipFile('ml-10M100K/ml-10m.zip')
+            zip_file = zipfile.ZipFile('ml-10m.zip')
             zip_file.extractall()
 
-            data = open(file_name)
+            data = open('ml-10M100K/'+file_name)
 
         else:
             quit()
