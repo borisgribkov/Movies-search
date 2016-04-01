@@ -1,5 +1,34 @@
-from db_request import (db_request_no_params, db_request_insert_data, db_request_select_movie_id,
+import urllib
+import zipfile
+
+
+from db_request import (db_request_create_table, db_request_insert_data, db_request_select_movie_id,
                         db_request_insert_genre, db_request_select_genre_id, db_request_create_connection)
+
+
+def open_file(file_name):
+
+    try:
+        data = open('ml-10M100K/'+file_name)
+
+    except:
+
+        print 'Please copy ratings.dat into the project folder or download it from MovieLens'
+        download_start = raw_input('Start download? Press Y to start')
+
+        if download_start == 'y':
+
+            urllib.urlretrieve('http://files.grouplens.org/datasets/movielens/ml-10m.zip')
+
+            zip_file = zipfile.ZipFile('ml-10M100K/ml-10m.zip')
+            zip_file.extractall()
+
+            data = open(file_name)
+
+        else:
+            quit()
+
+    return data
 
 
 def average(rating, count):
@@ -13,7 +42,7 @@ def average(rating, count):
 
 def rating_count():
 
-    movies_rating = open('ratings.dat')
+    movies_rating = open_file('ratings.dat')
 
     rating = dict()
     count = dict()
@@ -36,9 +65,9 @@ def rating_count():
 
 def database_create(cur):
 
-    data_movies = open('movies.dat')
+    data_movies = open_file('movies.dat')
 
-    db_request_no_params(cur, 'create_table')
+    db_request_create_table(cur)
 
     movies_rating = rating_count()
 

@@ -1,7 +1,6 @@
-def db_request_no_params(cur, request):
+def db_request_create_table(cur):
 
-    if request == 'create_table':
-        cur.executescript('''
+   cur.executescript('''
         DROP TABLE IF EXISTS Movie;
         DROP TABLE IF EXISTS Genre;
         DROP TABLE IF EXISTS Connection;
@@ -22,13 +21,9 @@ def db_request_no_params(cur, request):
     );
     ''')
 
-    if request == 'get genre':
-        cur.execute('''SELECT Genre.id FROM Genre''')
-        request_genre = cur.fetchall()
-        return request_genre
 
-    if request == 'get genre for genre-row':
-        cur.execute('''SELECT Genre.id FROM Genre''')
+def db_request_get_genres(cur):
+    cur.execute('''SELECT Genre.id FROM Genre''')
 
 
 def db_request_insert_data(cur, name, year, rating):

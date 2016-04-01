@@ -3,7 +3,7 @@ import sqlite3
 
 
 from db_creation import database_create
-from db_request import db_request_no_params, db_request_find_film, db_request_find_recommendations
+from db_request import db_request_get_genres, db_request_find_film, db_request_find_recommendations
 from recommender import recommender
 
 
@@ -44,9 +44,9 @@ def input_check(word):
 def genre_dict_empty(cur):
 
     genre_dict = dict()
-    request_genre = db_request_no_params(cur, 'get genre')
+    db_request_get_genres(cur)
 
-    for item in request_genre:
+    for item in cur:
         genre_dict[item[0]] = genre_dict.get(item[0], 0)
     return genre_dict
 
@@ -78,7 +78,7 @@ def main():
     cur = conn.cursor()
 
     try:
-        db_request_no_params(cur, 'get genre')
+        db_request_get_genres(cur)
         print ('Database connected!')
     except:
         print 'Creating the database...'
@@ -110,8 +110,9 @@ def main():
     recommendation_results = recommender(quest, cur, genre_dict)
 
     for film in recommendation_results:
-        recommended_films = db_request_find_recommendations(cur, film)
-        print_result(recommended_films, genre_dict)
+
+        recommended_film = db_request_find_recommendations(cur, film)
+        print_result(recommended_film, genre_dict)
 
     # print 'Genres dict after recommendations: ', genre_dict, '\n'  'Length:', len(genre_dict)
 

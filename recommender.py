@@ -1,13 +1,13 @@
 import numpy as np
 from scipy.sparse import lil_matrix
-from db_request import db_request_no_params, db_request_movies_for_film_col, db_request_film_genre_for_matrix
+from db_request import db_request_get_genres, db_request_movies_for_film_col, db_request_film_genre_for_matrix
 
 
 def create_matrix(cur, quest):
 
     # index genre_id -> row_id
     genre_to_row = dict()
-    db_request_no_params(cur, 'get genre for genre-row')
+    db_request_get_genres(cur)
 
     for row_id, genre_id in enumerate(cur):
         genre_to_row[genre_id[0]] = row_id
@@ -56,13 +56,13 @@ def recommender(quest, cur, genre_dict):
     matrix_film_genre, genre_to_row, film_to_col = create_matrix(cur, quest)
 
     percent_matrix = float(matrix_film_genre.nnz) / len(film_to_col) / len(genre_to_row) * 100
-    print 'Matrix film-genre filling: %.2f%%' % percent_matrix
+    print 'Matrix film - genre filling: %.2f%%' % percent_matrix
 
     user_vector = create_vector(genre_dict, genre_to_row)
     # print 'User vector', user_vector
 
     percent_user = float(user_vector.nnz) / len(genre_to_row) * 100
-    print 'User-vector filling: %.2f%%' % percent_user, '\n'
+    print 'User - vector filling: %.2f%%' % percent_user, '\n'
 
     # print 'Matrix shape', matrix_film_genre.shape
     # print 'Vector shape', user_vector.shape
@@ -76,7 +76,6 @@ def recommender(quest, cur, genre_dict):
 
     sorting_length = 5  # Number of the recommended movies
     sorted_ind = np.argsort(recommendations_vector.data)[-sorting_length:][::-1]  # Sorting to select top recommendations
-    print sorted_ind, type(sorted_ind)
 
     recommendations_result = list()
     recommendations_to_film = dict()
