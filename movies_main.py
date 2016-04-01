@@ -1,18 +1,18 @@
-import numpy as np
 import sqlite3
-#import enchant
-from scipy.sparse import lil_matrix
+# import enchant
+
 
 from db_creation import database_create
-from db_request import  db_request_no_params, db_request_find_film
+from db_request import db_request_no_params, db_request_find_film, db_request_find_recommendations
 from recommender import recommender
 
-#d = enchant.Dict("en_US")
+
+# d = enchant.Dict("en_US")
 
 
 def input_check(word):
 
-    word_check=d.check(word)
+    word_check = d.check(word)
     if word_check is False:
 
         print 'Maybe your input is not correct:', word
@@ -43,23 +43,23 @@ def input_check(word):
 
 def genre_dict_empty(cur):
 
-    genre_dict=dict()
+    genre_dict = dict()
     request_genre = db_request_no_params(cur, 'get genre')
 
     for item in request_genre:
-        genre_dict[item[0]]=genre_dict.get(item[0],0)
+        genre_dict[item[0]] = genre_dict.get(item[0], 0)
     return genre_dict
 
 
 def print_result(search_result, genre_dict):
 
-    id_local=None
-    genres_out=dict()
+    id_local = None
+    genres_out = dict()
 
     for item in search_result:
 
-        genres_out[item[0]]=genres_out.get(item[0], '')+item[5]+' '
-        genre_dict[item[4]]=genre_dict.get(item[4],0)+1
+        genres_out[item[0]] = genres_out.get(item[0], '')+item[5]+' '
+        genre_dict[item[4]] = genre_dict.get(item[4], 0)+1
 
         if int(item[0]) == id_local:
             continue
@@ -70,50 +70,6 @@ def print_result(search_result, genre_dict):
 
     print 'Genres for the film id:', genres_out
 
-def create_matrix(cur):
-
-    # index genre_id -> row_id
-    genre_to_row=dict()
-    cur.execute('''SELECT Genre.id FROM Genre''')
-
-    for row_id, genre in enumerate(cur):
-        genre_to_row[genre[0]]=row_id
-
-    # index film_id -> col_id
-    film_to_col=dict()
-    cur.execute('''SELECT Movie.id FROM Movie WHERE Movie.name NOT LIKE ?''', ('%' + quest + '%',))
-
-    for col_id, id in enumerate(cur):
-        film_to_col[id[0]]=col_id
-
-    #print film_to_col
-    #print genre_to_row
-
-    #print 'Films columns:', len(film_to_col)
-    #print 'Genres rows', len(genre_to_row)
-
-    matrix_film_genre = lil_matrix((len(genre_to_row), len(film_to_col)))
-
-    cur.execute('''SELECT Movie.id, Genre.id
-        FROM Movie JOIN Connection JOIN Genre
-        ON Connection.movie_id = Movie.id AND Connection.genre_id = Genre.id''')
-
-    for id, genre in cur:
-        row_id=genre_to_row.get(genre)
-        col_id=film_to_col.get(id)
-        #print row_id, col_id, name, genre
-        if row_id is not None and col_id is not None:
-            matrix_film_genre[row_id, col_id] = 1
-
-    return matrix_film_genre, genre_to_row, film_to_col
-def create_vector(genre_dict, genre_to_row):
-
-    user_vector = lil_matrix((1, len(genre_dict)))
-
-    for item in genre_dict:
-        col_name=genre_to_row[item]
-        user_vector[0 ,col_name]=genre_dict[item]
-    return user_vector
 
 def main():
 
@@ -137,7 +93,7 @@ def main():
         exit()
 
     # Checking the input
-    #quest=input_check(quest)
+    # quest=input_check(quest)
 
     # Searching
     genre_dict = genre_dict_empty(cur)
@@ -148,22 +104,16 @@ def main():
         exit()
 
     print_result(search_result, genre_dict)
+    # print 'Genres dict after searching: ', genre_dict, '\n'  'Length:', len(genre_dict)
 
-    #print 'All found genres :', genre_dict, '\n'  'Length:', len(genre_dict)
     print'\nCombined genre - based recommendations:\n'
     recommendation_results = recommender(quest, cur, genre_dict)
 
-    for rec in recommendation_results:
+    for film in recommendation_results:
+        recommended_films = db_request_find_recommendations(cur, film)
+        print_result(recommended_films, genre_dict)
 
-        cur.execute('''SELECT Movie.id, Movie.name, Movie.year, Movie.rating, Genre.id, Genre.genre
-            FROM Movie JOIN Connection JOIN Genre
-            ON Connection.movie_id = Movie.id AND Connection.genre_id = Genre.id
-            WHERE Movie.id LIKE ?''', (rec,))
-        recom_out = cur.fetchall()
-
-        print_result(recom_out, genre_dict)
-
-    #print 'All found genres :', genre_dict, '\n'  'Length:', len(genre_dict)
+    # print 'Genres dict after recommendations: ', genre_dict, '\n'  'Length:', len(genre_dict)
 
     conn.close()
 
