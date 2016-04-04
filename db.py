@@ -1,3 +1,7 @@
+"""
+Database (sqlite3) operations
+"""
+
 def create_table(cur):
 
    cur.executescript('''

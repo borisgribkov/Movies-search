@@ -1,9 +1,15 @@
+"""
+Data download and import to DB
+"""
+
 import urllib
 import zipfile
 
 
-from db_request import (create_table, insert_data, select_movie_id,
-                        insert_genre, select_genre_id, create_connection)
+from db import (
+    create_table, insert_data, select_movie_id,
+    insert_genre, select_genre_id, create_connection,
+)
 
 
 def open_file(file_name):

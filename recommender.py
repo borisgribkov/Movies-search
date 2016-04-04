@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.sparse import lil_matrix
-from db_request import get_genres, movies_for_film_col, film_genre_for_matrix
+from db import get_genres, movies_for_film_col, film_genre_for_matrix
 
 
 def create_matrix(cur, quest):

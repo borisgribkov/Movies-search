@@ -1,9 +1,9 @@
-import sqlite3
+import sqlite3  # TODO move to db module
 # import enchant
 
 
 from db_creation import fillin_database
-from db_request import get_genres, find_film, find_recommendations
+from db import get_genres, find_film, find_recommendations
 from recommender import recommender
 
 
@@ -73,8 +73,8 @@ def print_result(search_result, genre_dict):
 
 def main():
 
-    conn = sqlite3.connect('movies.sqlite')
-    conn.text_factory = str
+    conn = sqlite3.connect('movies.sqlite')  # TODO move to db.connect
+    conn.text_factory = str  # FIXME does this work with non-ascii titles?
     cur = conn.cursor()
 
     try:
