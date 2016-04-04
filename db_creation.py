@@ -2,8 +2,8 @@ import urllib
 import zipfile
 
 
-from db_request import (db_request_create_table, db_request_insert_data, db_request_select_movie_id,
-                        db_request_insert_genre, db_request_select_genre_id, db_request_create_connection)
+from db_request import (create_table, insert_data, select_movie_id,
+                        insert_genre, select_genre_id, create_connection)
 
 
 def open_file(file_name):
@@ -67,7 +67,7 @@ def database_create(cur):
 
     data_movies = open_file('movies.dat')
 
-    db_request_create_table(cur)
+    create_table(cur)
 
     movies_rating = rating_count()
 
@@ -87,13 +87,13 @@ def database_create(cur):
             rating = movies_rating[movie_id]
         except: rating = 0
 
-        db_request_insert_data(cur, name, year, rating)
-        movie_id = db_request_select_movie_id(cur, name)
+        insert_data(cur, name, year, rating)
+        movie_id = select_movie_id(cur, name)
 
         for genre in genres_list:
 
-            db_request_insert_genre(cur, genre)
-            genre_id = db_request_select_genre_id(cur, genre)
-            db_request_create_connection(cur, movie_id, genre_id)
+            insert_genre(cur, genre)
+            genre_id = select_genre_id(cur, genre)
+            create_connection(cur, movie_id, genre_id)
 
     data_movies.close()

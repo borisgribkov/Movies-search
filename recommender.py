@@ -1,20 +1,20 @@
 import numpy as np
 from scipy.sparse import lil_matrix
-from db_request import db_request_get_genres, db_request_movies_for_film_col, db_request_film_genre_for_matrix
+from db_request import get_genres, movies_for_film_col, film_genre_for_matrix
 
 
 def create_matrix(cur, quest):
 
     # index genre_id -> row_id
     genre_to_row = dict()
-    db_request_get_genres(cur)
+    get_genres(cur)
 
     for row_id, genre_id in enumerate(cur):
         genre_to_row[genre_id[0]] = row_id
 
     # index film_id -> col_id
     film_to_col = dict()
-    db_request_movies_for_film_col(cur, quest)
+    movies_for_film_col(cur, quest)
 
     for col_id, movie_id in enumerate(cur):
         film_to_col[movie_id[0]] = col_id
@@ -27,7 +27,7 @@ def create_matrix(cur, quest):
 
     matrix_film_genre = lil_matrix((len(genre_to_row), len(film_to_col)))
 
-    db_request_film_genre_for_matrix(cur)
+    film_genre_for_matrix(cur)
 
     for mov_id, gen_id in cur:
         row_id = genre_to_row.get(gen_id)
