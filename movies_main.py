@@ -2,7 +2,7 @@ import sqlite3
 # import enchant
 
 
-from db_creation import database_create
+from db_creation import fillin_database
 from db_request import get_genres, find_film, find_recommendations
 from recommender import recommender
 
@@ -82,7 +82,7 @@ def main():
         print ('Database connected!')
     except:
         print 'Creating the database...'
-        database_create(cur)
+        fillin_database(cur)
 
     conn.commit()
 

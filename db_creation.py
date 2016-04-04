@@ -63,7 +63,7 @@ def rating_count():
     return rating
 
 
-def database_create(cur):
+def fillin_database(cur):
 
     data_movies = open_file('movies.dat')
 
