@@ -1,4 +1,8 @@
-def db_request_create_table(cur):
+"""
+Database (sqlite3) operations
+"""
+
+def create_table(cur):
 
    cur.executescript('''
         DROP TABLE IF EXISTS Movie;
@@ -22,35 +26,35 @@ def db_request_create_table(cur):
     ''')
 
 
-def db_request_get_genres(cur):
+def get_genres(cur):
     cur.execute('''SELECT Genre.id FROM Genre''')
 
 
-def db_request_insert_data(cur, name, year, rating):
+def insert_data(cur, name, year, rating):
     cur.execute('INSERT INTO Movie (name, year, rating) VALUES (?, ?, ?)', (name, year, rating))
 
 
-def db_request_select_movie_id(cur, name):
+def select_movie_id(cur, name):
     cur.execute('SELECT id FROM Movie WHERE name = ? ', (name, ))
     movie_id = cur.fetchone()[0]
     return movie_id
 
 
-def db_request_insert_genre(cur, genre):
+def insert_genre(cur, genre):
     cur.execute('INSERT OR IGNORE INTO Genre (genre) VALUES (?)', (genre,))
 
 
-def db_request_select_genre_id(cur, genre):
+def select_genre_id(cur, genre):
     cur.execute('SELECT id FROM Genre WHERE genre = ? ', (genre, ))
     genre_id = cur.fetchone()[0]
     return genre_id
 
 
-def db_request_create_connection(cur, movie_id, genre_id):
+def create_connection(cur, movie_id, genre_id):
     cur.execute('INSERT OR REPLACE INTO Connection (movie_id, genre_id) VALUES (?,?)', (movie_id, genre_id))
 
 
-def db_request_find_film(cur, quest):
+def find_film(cur, quest):
     cur.execute('''SELECT Movie.id, Movie.name, Movie.year, Movie.rating, Genre.id, Genre.genre
         FROM Movie JOIN Connection JOIN Genre
         ON Connection.movie_id = Movie.id AND Connection.genre_id = Genre.id
@@ -59,7 +63,7 @@ def db_request_find_film(cur, quest):
     return request
 
 
-def db_request_find_recommendations(cur, film):
+def find_recommendations(cur, film):
     cur.execute('''SELECT Movie.id, Movie.name, Movie.year, Movie.rating, Genre.id, Genre.genre
             FROM Movie JOIN Connection JOIN Genre
             ON Connection.movie_id = Movie.id AND Connection.genre_id = Genre.id
@@ -68,11 +72,11 @@ def db_request_find_recommendations(cur, film):
     return recommended_films
 
 
-def db_request_movies_for_film_col(cur, quest):
+def movies_for_film_col(cur, quest):
     cur.execute('''SELECT Movie.id FROM Movie WHERE Movie.name NOT LIKE ?''', ('%' + quest + '%',))
 
 
-def db_request_film_genre_for_matrix(cur):
+def film_genre_for_matrix(cur):
     cur.execute('''SELECT Movie.id, Genre.id
         FROM Movie JOIN Connection JOIN Genre
         ON Connection.movie_id = Movie.id AND Connection.genre_id = Genre.id''')

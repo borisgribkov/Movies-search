@@ -1,10 +1,10 @@
-import sqlite3
+import sqlite3  # TODO move to db module
 # import enchant
 
 
-from db_creation import database_create
-from db_request import db_request_get_genres, db_request_find_film, db_request_find_recommendations
-from recommender import recommender
+from . import db
+from .data import fillin_database
+from .recommender import recommender
 
 
 # d = enchant.Dict("en_US")
@@ -44,7 +44,7 @@ def input_check(word):
 def genre_dict_empty(cur):
 
     genre_dict = dict()
-    db_request_get_genres(cur)
+    db.get_genres(cur)
 
     for item in cur:
         genre_dict[item[0]] = genre_dict.get(item[0], 0)
@@ -73,16 +73,16 @@ def print_result(search_result, genre_dict):
 
 def main():
 
-    conn = sqlite3.connect('movies.sqlite')
-    conn.text_factory = str
+    conn = sqlite3.connect('movies.sqlite')  # TODO move to db.connect
+    conn.text_factory = str  # FIXME does this work with non-ascii titles?
     cur = conn.cursor()
 
     try:
-        db_request_get_genres(cur)
+        db.get_genres(cur)
         print ('Database connected!')
     except:
         print 'Creating the database...'
-        database_create(cur)
+        fillin_database(cur)
 
     conn.commit()
 
@@ -97,7 +97,7 @@ def main():
 
     # Searching
     genre_dict = genre_dict_empty(cur)
-    search_result = db_request_find_film(cur, quest)
+    search_result = db.find_film(cur, quest)
 
     if len(search_result) < 1:
         print 'Your film is not in the database, sorry'
@@ -111,7 +111,7 @@ def main():
 
     for film in recommendation_results:
 
-        recommended_film = db_request_find_recommendations(cur, film)
+        recommended_film = db.find_recommendations(cur, film)
         print_result(recommended_film, genre_dict)
 
     # print 'Genres dict after recommendations: ', genre_dict, '\n'  'Length:', len(genre_dict)

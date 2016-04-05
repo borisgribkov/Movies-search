@@ -1,9 +1,11 @@
+"""
+Data download and import to DB
+"""
+
 import urllib
 import zipfile
 
-
-from db_request import (db_request_create_table, db_request_insert_data, db_request_select_movie_id,
-                        db_request_insert_genre, db_request_select_genre_id, db_request_create_connection)
+from . import db
 
 
 def open_file(file_name):
@@ -63,11 +65,11 @@ def rating_count():
     return rating
 
 
-def database_create(cur):
+def fillin_database(cur):
 
     data_movies = open_file('movies.dat')
 
-    db_request_create_table(cur)
+    db.create_table(cur)
 
     movies_rating = rating_count()
 
@@ -87,13 +89,13 @@ def database_create(cur):
             rating = movies_rating[movie_id]
         except: rating = 0
 
-        db_request_insert_data(cur, name, year, rating)
-        movie_id = db_request_select_movie_id(cur, name)
+        db.insert_data(cur, name, year, rating)
+        movie_id = db.select_movie_id(cur, name)
 
         for genre in genres_list:
 
-            db_request_insert_genre(cur, genre)
-            genre_id = db_request_select_genre_id(cur, genre)
-            db_request_create_connection(cur, movie_id, genre_id)
+            db.insert_genre(cur, genre)
+            genre_id = db.select_genre_id(cur, genre)
+            db.create_connection(cur, movie_id, genre_id)
 
     data_movies.close()
